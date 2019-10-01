@@ -14,17 +14,12 @@ public final class DebeziumObject {
         this.eventType = defineEvent();
     }
 
-    // TODO validate
     private EventType defineEvent() {
         if (value.getNewValue() == null) {
             return EventType.DELETE;
         }
 
-        if (value.getOldValue() == null) {
-            return EventType.INSERT;
-        }
-
-        return EventType.UPDATE;
+        return value.getOperation();
     }
 
     public EventType getEventType() {

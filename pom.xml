@@ -19,6 +19,7 @@
 
         <kafka-streams.version>2.3.0</kafka-streams.version>
         <vertx.version>3.8.1</vertx.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <dependencyManagement>
