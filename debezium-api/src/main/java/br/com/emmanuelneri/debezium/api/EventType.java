@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 public enum EventType {
     INSERT("c"),
     UPDATE("u"),
+    READ("r"),
     DELETE(null);
 
     private static final Map<String, EventType> MAP = create();

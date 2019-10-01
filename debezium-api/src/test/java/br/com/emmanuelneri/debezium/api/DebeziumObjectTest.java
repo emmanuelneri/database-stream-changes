@@ -12,6 +12,9 @@ public class DebeziumObjectTest {
 
         final DebeziumObject debeziumObject = new DebeziumObject(key, value);
         Assert.assertEquals(EventType.INSERT, debeziumObject.getEventType());
+        Assert.assertEquals(Long.valueOf(6), debeziumObject.getIdentifier());
+        Assert.assertNull(debeziumObject.getOldValue());
+        Assert.assertNotNull(debeziumObject.getNewValue());
     }
 
     @Test
@@ -21,6 +24,8 @@ public class DebeziumObjectTest {
 
         final DebeziumObject debeziumObject = new DebeziumObject(key, value);
         Assert.assertEquals(EventType.UPDATE, debeziumObject.getEventType());
+        Assert.assertEquals(Long.valueOf(1), debeziumObject.getIdentifier());
+        Assert.assertNotNull(debeziumObject.getNewValue());
     }
 
     @Test
@@ -30,5 +35,20 @@ public class DebeziumObjectTest {
 
         final DebeziumObject debeziumObject = new DebeziumObject(key, value);
         Assert.assertEquals(EventType.DELETE, debeziumObject.getEventType());
+        Assert.assertEquals(Long.valueOf(4), debeziumObject.getIdentifier());
+        Assert.assertNull(debeziumObject.getOldValue());
+        Assert.assertNull(debeziumObject.getNewValue());
+    }
+
+    @Test
+    public void shouldBeReadEvent() {
+        final String key = "{\"schema\":{\"type\":\"struct\",\"fields\":[{\"type\":\"int64\",\"optional\":false,\"field\":\"id\"}],\"optional\":false,\"name\":\"db.public.customer.Key\"},\"payload\":{\"id\":1}}";
+        final String value = "{\"schema\":{\"type\":\"struct\",\"fields\":[{\"type\":\"struct\",\"fields\":[{\"type\":\"int64\",\"optional\":false,\"field\":\"id\"},{\"type\":\"string\",\"optional\":true,\"field\":\"name\"}],\"optional\":true,\"name\":\"db.public.customer.Value\",\"field\":\"before\"},{\"type\":\"struct\",\"fields\":[{\"type\":\"int64\",\"optional\":false,\"field\":\"id\"},{\"type\":\"string\",\"optional\":true,\"field\":\"name\"}],\"optional\":true,\"name\":\"db.public.customer.Value\",\"field\":\"after\"},{\"type\":\"struct\",\"fields\":[{\"type\":\"string\",\"optional\":true,\"field\":\"version\"},{\"type\":\"string\",\"optional\":true,\"field\":\"connector\"},{\"type\":\"string\",\"optional\":false,\"field\":\"name\"},{\"type\":\"string\",\"optional\":false,\"field\":\"db\"},{\"type\":\"int64\",\"optional\":true,\"field\":\"ts_usec\"},{\"type\":\"int64\",\"optional\":true,\"field\":\"txId\"},{\"type\":\"int64\",\"optional\":true,\"field\":\"lsn\"},{\"type\":\"string\",\"optional\":true,\"field\":\"schema\"},{\"type\":\"string\",\"optional\":true,\"field\":\"table\"},{\"type\":\"boolean\",\"optional\":true,\"default\":false,\"field\":\"snapshot\"},{\"type\":\"boolean\",\"optional\":true,\"field\":\"last_snapshot_record\"},{\"type\":\"int64\",\"optional\":true,\"field\":\"xmin\"}],\"optional\":false,\"name\":\"io.debezium.connector.postgresql.Source\",\"field\":\"source\"},{\"type\":\"string\",\"optional\":false,\"field\":\"op\"},{\"type\":\"int64\",\"optional\":true,\"field\":\"ts_ms\"}],\"optional\":false,\"name\":\"db.public.customer.Envelope\"},\"payload\":{\"before\":null,\"after\":{\"id\":1,\"name\":\"Customer 1\"},\"source\":{\"version\":\"0.9.5.Final\",\"connector\":\"postgresql\",\"name\":\"db\",\"db\":\"cdc\",\"ts_usec\":1569972819020000,\"txId\":559,\"lsn\":23779864,\"schema\":\"public\",\"table\":\"customer\",\"snapshot\":true,\"last_snapshot_record\":false,\"xmin\":null},\"op\":\"r\",\"ts_ms\":1569972819020}}\n";
+
+        final DebeziumObject debeziumObject = new DebeziumObject(key, value);
+        Assert.assertEquals(EventType.READ, debeziumObject.getEventType());
+        Assert.assertEquals(Long.valueOf(1), debeziumObject.getIdentifier());
+        Assert.assertNull(debeziumObject.getOldValue());
+        Assert.assertNotNull(debeziumObject.getNewValue());
     }
 }
