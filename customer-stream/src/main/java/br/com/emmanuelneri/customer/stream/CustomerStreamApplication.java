@@ -39,17 +39,13 @@ public class CustomerStreamApplication {
                     }
 
                     final Struct newValue = debeziumObject.getNewValue();
-                    final Customer customer = toCustomer(newValue);
+                    final Customer customer = CustomerMapper.to(newValue);
                     return KeyValue.pair(customer.getId().toString(), customer);
                 });
 
         customerStream.to(CUSTOMER_TOPIC, Produced.with(Serdes.String(), Serdes.serdeFrom(Customer.serializer, Customer.deserializer)));
 
         start(builder);
-    }
-
-    private static Customer toCustomer(final Struct value) {
-        return new Customer(value.getLong("id"), value.getString("name"));
     }
 
     private static void start(final StreamsBuilder builder) {

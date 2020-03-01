@@ -48,7 +48,7 @@ public class SaleStreamApplication {
                     }
 
                     final Struct newValue = debeziumObject.getNewValue();
-                    final Sale sale = toSale(newValue);
+                    final Sale sale = SaleMapper.to(newValue);
                     return KeyValue.pair(sale.getId().toString(), sale);
                 });
 
@@ -63,15 +63,6 @@ public class SaleStreamApplication {
                         Serdes.serdeFrom(EnrichedSale.serializer, EnrichedSale.deserializer)));
 
         start(builder);
-    }
-
-    private static Sale toSale(final Struct vale) {
-        return new Sale(
-                vale.getLong("id"),
-                vale.getString("identifier"),
-                vale.getLong("customer_id"),
-                vale.getString("product"),
-                vale.getBytes("total"));
     }
 
     private static void start(final StreamsBuilder builder) {
