@@ -18,23 +18,21 @@ import org.apache.kafka.streams.kstream.Produced;
 
 import java.util.Properties;
 
-public class Application {
+public class CustomerStreamApplication {
 
     private static final String APPLICATION_ID = "customer-stream";
     private static final String CLIENT_ID = "customer-consumer";
     private static final String BOOTSTRAP_SERVERS = "localhost:9092";
     private static final String OFFSET_CONFIG = "earliest";
 
-    private static final String ORIGIN_TOPIC = "db.public.customer";
-    private static final String DESTIONATION_TOPIC = "customer";
+    private static final String DEBEZIUM_CUSTOMER_TOPIC = "db.public.customer";
+    private static final String CUSTOMER_TOPIC = "customer";
 
     public static void main(final String[] args) {
         final StreamsBuilder builder = new StreamsBuilder();
-        final KStream<String, String> customerDebeziumStream = builder.stream(ORIGIN_TOPIC, Consumed.with(Serdes.String(), Serdes.String()));
 
-        final KStream<Long, String> customerStream = customerDebeziumStream
+        final KStream<Long, String> customerStream = builder.stream(DEBEZIUM_CUSTOMER_TOPIC, Consumed.with(Serdes.String(), Serdes.String()))
                 .map((KeyValueMapper<String, String, KeyValue<Long, String>>) (key, value) -> {
-
                     final DebeziumObject debeziumObject = new DebeziumObject(key, value);
                     if (debeziumObject.getEventType() == EventType.DELETE) {
                         final Long identifier = debeziumObject.getIdentifier();
@@ -46,7 +44,7 @@ public class Application {
                     return KeyValue.pair(customer.getId(), newValue.toString());
                 });
 
-        customerStream.to(DESTIONATION_TOPIC, Produced.with(Serdes.Long(), Serdes.String()));
+        customerStream.to(CUSTOMER_TOPIC, Produced.with(Serdes.Long(), Serdes.String()));
 
         start(builder);
     }

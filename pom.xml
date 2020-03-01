@@ -35,7 +35,8 @@
     </dependencyManagement>
 
     <modules>
-        <module>customer-stream</module>
         <module>debezium-api</module>
+        <module>customer-stream</module>
+        <module>sale-stream</module>
     </modules>
 </project>

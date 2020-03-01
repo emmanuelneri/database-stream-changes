@@ -9,5 +9,6 @@ docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --repl
 
 #Cotext topics
 docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic customer
+docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic sale
 
 curl -v POST -H "Content-Type: application/json" -d @setup/connector/debezium-kafka-connector.json ${kafkaConnectorURL}
