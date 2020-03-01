@@ -38,5 +38,6 @@
         <module>debezium-api</module>
         <module>customer-stream</module>
         <module>sale-stream</module>
+        <module>sale-consumer</module>
     </modules>
 </project>
