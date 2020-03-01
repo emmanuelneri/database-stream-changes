@@ -1,10 +1,9 @@
 package br.com.emmanuelneri.customer.stream;
 
-import br.com.emmanuelneri.customer.stream.interfaces.Customer;
+import br.com.emmanuelneri.customer.schema.Customer;
 import br.com.emmanuelneri.debezium.api.DebeziumObject;
 import br.com.emmanuelneri.debezium.api.EventType;
-import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
+import br.com.emmanuelneri.debezium.api.Struct;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -31,22 +30,26 @@ public class CustomerStreamApplication {
     public static void main(final String[] args) {
         final StreamsBuilder builder = new StreamsBuilder();
 
-        final KStream<Long, String> customerStream = builder.stream(DEBEZIUM_CUSTOMER_TOPIC, Consumed.with(Serdes.String(), Serdes.String()))
-                .map((KeyValueMapper<String, String, KeyValue<Long, String>>) (key, value) -> {
+        final KStream<String, Customer> customerStream = builder.stream(DEBEZIUM_CUSTOMER_TOPIC, Consumed.with(Serdes.String(), Serdes.String()))
+                .map((KeyValueMapper<String, String, KeyValue<String, Customer>>) (key, value) -> {
                     final DebeziumObject debeziumObject = new DebeziumObject(key, value);
                     if (debeziumObject.getEventType() == EventType.DELETE) {
-                        final Long identifier = debeziumObject.getIdentifier();
+                        final String identifier = debeziumObject.getIdentifier();
                         return KeyValue.pair(identifier, null);
                     }
 
-                    final JsonObject newValue = debeziumObject.getNewValue();
-                    final Customer customer = Json.decodeValue(newValue.toString(), Customer.class);
-                    return KeyValue.pair(customer.getId(), newValue.toString());
+                    final Struct newValue = debeziumObject.getNewValue();
+                    final Customer customer = toCustomer(newValue);
+                    return KeyValue.pair(customer.getId().toString(), customer);
                 });
 
-        customerStream.to(CUSTOMER_TOPIC, Produced.with(Serdes.Long(), Serdes.String()));
+        customerStream.to(CUSTOMER_TOPIC, Produced.with(Serdes.String(), Serdes.serdeFrom(Customer.serializer, Customer.deserializer)));
 
         start(builder);
+    }
+
+    private static Customer toCustomer(final Struct value) {
+        return new Customer(value.getLong("id"), value.getString("name"));
     }
 
     private static void start(final StreamsBuilder builder) {

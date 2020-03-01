@@ -9,12 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sale-stream</artifactId>
+    <artifactId>sale-schema</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>br.com.emmanuelneri</groupId>
-            <artifactId>sale-schema</artifactId>
+            <artifactId>customer-schema</artifactId>
             <version>1.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
@@ -33,19 +33,8 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>br.com.emmanuelneri</groupId>
-            <artifactId>debezium-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>br.com.emmanuelneri</groupId>
-                    <artifactId>mapper-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-streams</artifactId>
+            <artifactId>kafka-clients</artifactId>
             <version>${kafka-streams.version}</version>
         </dependency>
     </dependencies>

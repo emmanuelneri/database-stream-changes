@@ -12,7 +12,7 @@ public class DebeziumObjectTest {
 
         final DebeziumObject debeziumObject = new DebeziumObject(key, value);
         Assert.assertEquals(EventType.INSERT, debeziumObject.getEventType());
-        Assert.assertEquals(Long.valueOf(6), debeziumObject.getIdentifier());
+        Assert.assertEquals("6", debeziumObject.getIdentifier());
         Assert.assertNull(debeziumObject.getOldValue());
         Assert.assertNotNull(debeziumObject.getNewValue());
     }
@@ -24,7 +24,7 @@ public class DebeziumObjectTest {
 
         final DebeziumObject debeziumObject = new DebeziumObject(key, value);
         Assert.assertEquals(EventType.UPDATE, debeziumObject.getEventType());
-        Assert.assertEquals(Long.valueOf(1), debeziumObject.getIdentifier());
+        Assert.assertEquals("1", debeziumObject.getIdentifier());
         Assert.assertNotNull(debeziumObject.getNewValue());
     }
 
@@ -35,7 +35,7 @@ public class DebeziumObjectTest {
 
         final DebeziumObject debeziumObject = new DebeziumObject(key, value);
         Assert.assertEquals(EventType.DELETE, debeziumObject.getEventType());
-        Assert.assertEquals(Long.valueOf(4), debeziumObject.getIdentifier());
+        Assert.assertEquals("4", debeziumObject.getIdentifier());
         Assert.assertNull(debeziumObject.getOldValue());
         Assert.assertNull(debeziumObject.getNewValue());
     }
@@ -47,7 +47,7 @@ public class DebeziumObjectTest {
 
         final DebeziumObject debeziumObject = new DebeziumObject(key, value);
         Assert.assertEquals(EventType.READ, debeziumObject.getEventType());
-        Assert.assertEquals(Long.valueOf(1), debeziumObject.getIdentifier());
+        Assert.assertEquals("1", debeziumObject.getIdentifier());
         Assert.assertNull(debeziumObject.getOldValue());
         Assert.assertNotNull(debeziumObject.getNewValue());
     }

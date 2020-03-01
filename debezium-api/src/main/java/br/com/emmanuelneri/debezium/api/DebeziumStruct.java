@@ -1,28 +1,27 @@
 package br.com.emmanuelneri.debezium.api;
 
-import io.vertx.core.json.JsonObject;
 
 abstract class DebeziumStruct {
 
     private static final String PAYLOAD_FIELD = "payload";
 
-    private final JsonObject payload;
+    private final Struct struct;
 
     DebeziumStruct(final String jsonValue) {
         if (jsonValue == null) {
-            this.payload = null;
+            this.struct = null;
         } else {
-            final JsonObject value = new JsonObject(jsonValue);
-            this.payload = this.getAtribute(value, PAYLOAD_FIELD);
+            final Struct value = new Struct(jsonValue);
+            this.struct = this.getAtribute(value, PAYLOAD_FIELD);
         }
     }
 
-    JsonObject getPayload() {
-        return payload;
+    Struct getStruct() {
+        return struct;
     }
 
-    JsonObject getAtribute(final JsonObject jsonObject, final String atribute) {
-        return jsonObject.getJsonObject(atribute);
+    Struct getAtribute(final Struct struct, final String attribute) {
+        return struct.getObject(attribute);
     }
 
 }

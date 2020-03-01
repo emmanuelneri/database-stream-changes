@@ -1,11 +1,11 @@
 package br.com.emmanuelneri.sale.stream;
 
+import br.com.emmanuelneri.customer.schema.Customer;
 import br.com.emmanuelneri.debezium.api.DebeziumObject;
 import br.com.emmanuelneri.debezium.api.EventType;
-import br.com.emmanuelneri.sale.stream.interfaces.FullSale;
-import br.com.emmanuelneri.sale.stream.interfaces.Sale;
-import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
+import br.com.emmanuelneri.debezium.api.Struct;
+import br.com.emmanuelneri.sale.schema.EnrichedSale;
+import br.com.emmanuelneri.sale.schema.Sale;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -38,34 +38,40 @@ public class SaleStreamApplication {
 
     public static void main(final String[] args) {
         final StreamsBuilder builder = new StreamsBuilder();
-        final KStream<Long, String> saleStream = builder.stream(DEBEZIUM_SALE_TOPIC, Consumed.with(Serdes.String(), Serdes.String()))
-                .map((KeyValueMapper<String, String, KeyValue<Long, String>>) (key, value) -> {
+        final KStream<String, Sale> saleStream = builder.stream(DEBEZIUM_SALE_TOPIC, Consumed.with(Serdes.String(), Serdes.String()))
+                .map((KeyValueMapper<String, String, KeyValue<String, Sale>>) (key, value) -> {
 
                     final DebeziumObject debeziumObject = new DebeziumObject(key, value);
                     if (debeziumObject.getEventType() == EventType.DELETE) {
-                        final Long identifier = debeziumObject.getIdentifier();
+                        final String identifier = debeziumObject.getIdentifier();
                         return KeyValue.pair(identifier, null);
                     }
 
-                    final JsonObject newValue = debeziumObject.getNewValue();
-                    final Sale sale = Json.decodeValue(newValue.toString(), Sale.class);
-                    return KeyValue.pair(sale.getId(), newValue.toString());
+                    final Struct newValue = debeziumObject.getNewValue();
+                    final Sale sale = toSale(newValue);
+                    return KeyValue.pair(sale.getId().toString(), sale);
                 });
 
-
-        final GlobalKTable<Long, String> customerTable = builder.globalTable(CUSTOMER_STREAM,
-                Materialized.<Long, String, KeyValueStore<Bytes, byte[]>>as(CUSTOMER_STORE)
-                        .withKeySerde(Serdes.Long())
-                        .withValueSerde(Serdes.String()));
+        final GlobalKTable<String, Customer> customerTable = builder.globalTable(CUSTOMER_STREAM,
+                Materialized.<String, Customer, KeyValueStore<Bytes, byte[]>>as(CUSTOMER_STORE)
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(Serdes.serdeFrom(Customer.serializer, Customer.deserializer)));
 
         saleStream.leftJoin(customerTable,
-                (saleId, saleAsString) -> {
-                    final Sale sale = Json.decodeValue(saleAsString, Sale.class);
-                    return sale.getCustomerId();
-                }, (sale, customer) -> Json.encode(new FullSale(sale, customer)))
-                .to(SALE_TOPIC, Produced.with(Serdes.Long(), Serdes.String()));
+                (saleId, sale) -> sale.getCustomerId().toString(), EnrichedSale::new)
+                .to(SALE_TOPIC, Produced.with(Serdes.String(),
+                        Serdes.serdeFrom(EnrichedSale.serializer, EnrichedSale.deserializer)));
 
         start(builder);
+    }
+
+    private static Sale toSale(final Struct vale) {
+        return new Sale(
+                vale.getLong("id"),
+                vale.getString("identifier"),
+                vale.getLong("customer_id"),
+                vale.getString("product"),
+                vale.getBytes("total"));
     }
 
     private static void start(final StreamsBuilder builder) {

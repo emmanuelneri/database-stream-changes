@@ -4,14 +4,14 @@ final class DebeziumKey extends DebeziumStruct {
 
     private static final String IDENTIFIER_FIELD = "id";
 
-    private final Long identifier;
+    private final String identifier;
 
     DebeziumKey(final String jsonValue) {
         super(jsonValue);
-        this.identifier = getPayload().getLong(IDENTIFIER_FIELD);
+        this.identifier = getStruct().getString(IDENTIFIER_FIELD);
     }
 
-    Long getIdentifier() {
+    String getIdentifier() {
         return identifier;
     }
 }

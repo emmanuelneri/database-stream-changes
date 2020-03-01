@@ -1,7 +1,5 @@
 package br.com.emmanuelneri.debezium.api;
 
-import io.vertx.core.json.JsonObject;
-
 public final class DebeziumObject {
 
     private final DebeziumKey key;
@@ -26,15 +24,15 @@ public final class DebeziumObject {
         return eventType;
     }
 
-    public JsonObject getOldValue() {
+    public Struct getOldValue() {
         return this.value.getOldValue();
     }
 
-    public JsonObject getNewValue() {
+    public Struct getNewValue() {
         return this.value.getNewValue();
     }
 
-    public Long getIdentifier() {
+    public String getIdentifier() {
         return this.key.getIdentifier();
     }
 }

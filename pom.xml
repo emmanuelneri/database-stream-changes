@@ -15,29 +15,19 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <vertx.launcher>br.com.emmmanuelneri.Application</vertx.launcher>
-
-        <kafka-streams.version>2.3.0</kafka-streams.version>
-        <vertx.version>3.8.1</vertx.version>
+        <kafka-streams.version>2.4.0</kafka-streams.version>
+        <vertx.version>3.8.5</vertx.version>
+        <jackson.version>2.9.9</jackson.version>
         <junit.version>4.12</junit.version>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.vertx</groupId>
-                <artifactId>vertx-stack-depchain</artifactId>
-                <version>${vertx.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <modules>
-        <module>debezium-api</module>
+        <module>customer-schema</module>
         <module>customer-stream</module>
+        <module>sale-schema</module>
         <module>sale-stream</module>
         <module>sale-consumer</module>
+        <module>debezium-api</module>
+        <module>mapper-api</module>
     </modules>
 </project>
