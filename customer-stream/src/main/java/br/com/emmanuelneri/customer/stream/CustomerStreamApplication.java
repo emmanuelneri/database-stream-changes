@@ -15,9 +15,13 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KeyValueMapper;
 import org.apache.kafka.streams.kstream.Produced;
 
+import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class CustomerStreamApplication {
+
+    private static final Logger LOGGER = Logger.getLogger(CustomerStreamApplication.class.getName());
 
     private static final String APPLICATION_ID = "customer-stream";
     private static final String CLIENT_ID = "customer-consumer";
@@ -28,6 +32,7 @@ public class CustomerStreamApplication {
     private static final String CUSTOMER_TOPIC = "customer";
 
     public static void main(final String[] args) {
+        LOGGER.info("starting KStream: " + APPLICATION_ID);
         final StreamsBuilder builder = new StreamsBuilder();
 
         final KStream<String, Customer> customerStream = builder.stream(DEBEZIUM_CUSTOMER_TOPIC, Consumed.with(Serdes.String(), Serdes.String()))
@@ -51,6 +56,9 @@ public class CustomerStreamApplication {
     private static void start(final StreamsBuilder builder) {
         final Properties streamsConfiguration = createConfig();
         final KafkaStreams kafkaStreams = new KafkaStreams(builder.build(), streamsConfiguration);
+
+        LOGGER.info("Configs: " + streamsConfiguration);
+
         kafkaStreams.cleanUp(); // Only to test
         kafkaStreams.start();
     }
@@ -59,9 +67,14 @@ public class CustomerStreamApplication {
         final Properties streamsConfiguration = new Properties();
         streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, APPLICATION_ID);
         streamsConfiguration.put(StreamsConfig.CLIENT_ID_CONFIG, CLIENT_ID);
-        streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, getKafkaBootstrapServers());
         streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OFFSET_CONFIG);
         return streamsConfiguration;
+    }
+
+    private static String getKafkaBootstrapServers() {
+        final String kafkaBootstrapServers = System.getenv("KAFKA_BOOTSTRAP_SERVERS");
+        return Objects.nonNull(kafkaBootstrapServers) ? kafkaBootstrapServers : "localhost:9092";
     }
 
 }

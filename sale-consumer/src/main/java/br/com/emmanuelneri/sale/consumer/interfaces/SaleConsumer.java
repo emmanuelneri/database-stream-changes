@@ -14,7 +14,6 @@ public class SaleConsumer extends AbstractVerticle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SaleConsumer.class);
 
-
     private static final String CONSUMER_GROUP_ID = "sale-consumer";
     private static final String SALE_TOPIC = "sale";
 

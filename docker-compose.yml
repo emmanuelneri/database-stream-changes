@@ -1,8 +1,13 @@
 version: '3.6'
+networks:
+  database-stream-changes:
+    name: database-stream-changes
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:5.2.1
     container_name: zookeeper
+    networks:
+      - database-stream-changes
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -11,6 +16,8 @@ services:
   kafka:
     image: confluentinc/cp-kafka:5.2.1
     container_name: kafka
+    networks:
+      - database-stream-changes
     ports:
       - "9092:9092"
     depends_on:
@@ -22,11 +29,13 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
   kafka-connect:
     image: debezium/connect:0.9
     container_name: kafka-connect
+    networks:
+      - database-stream-changes
     ports:
       - "8083:8083"
     depends_on:
@@ -45,6 +54,8 @@ services:
   db:
     image: debezium/postgres:9.6-alpine
     container_name: db
+    networks:
+      - database-stream-changes
     ports:
       - "5432:5432"
     environment:
