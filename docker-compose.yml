@@ -4,7 +4,7 @@ networks:
     name: database-stream-changes
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.2.1
+    image: confluentinc/cp-zookeeper:5.5.1
     container_name: zookeeper
     networks:
       - database-stream-changes
@@ -14,7 +14,7 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
 
   kafka:
-    image: confluentinc/cp-kafka:5.2.1
+    image: confluentinc/cp-kafka:5.5.1
     container_name: kafka
     networks:
       - database-stream-changes
@@ -32,7 +32,7 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
   kafka-connect:
-    image: debezium/connect:0.9
+    image: debezium/connect:1.2
     container_name: kafka-connect
     networks:
       - database-stream-changes
@@ -52,7 +52,7 @@ services:
       STATUS_STORAGE_REPLICATION_FACTOR: 1
 
   db:
-    image: debezium/postgres:9.6-alpine
+    image: debezium/postgres:12-alpine
     container_name: db
     networks:
       - database-stream-changes
