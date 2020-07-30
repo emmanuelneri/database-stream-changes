@@ -1,14 +1,16 @@
-create table if not exists customer (
-    id BIGSERIAL PRIMARY KEY,
+USE salesCdc;
+
+create table customer (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
     name VARCHAR(200)
 );
 
-create table if not exists sale (
-    id BIGSERIAL PRIMARY KEY,
+create table sale (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
     customer_id BIGINT NOT NULL,
     identifier VARCHAR(50) NOT NULL,
     product VARCHAR(100) NOT NULL,
-    total NUMERIC(19, 2) NOT NULL,
+    total DECIMAL(19, 2) NOT NULL,
     CONSTRAINT sale_customer_id_fk FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
 

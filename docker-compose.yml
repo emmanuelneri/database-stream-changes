@@ -52,15 +52,16 @@ services:
       STATUS_STORAGE_REPLICATION_FACTOR: 1
 
   db:
-    image: debezium/postgres:12-alpine
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
     container_name: db
     networks:
       - database-stream-changes
     ports:
-      - "5432:5432"
+      - "1433:1433"
     environment:
-      POSTGRES_DB: cdc
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      ACCEPT_EULA: Y
+      SA_PASSWORD: "!Password1"
+      MSSQL_AGENT_ENABLED: "true"
     volumes:
-      - ./setup/sql/db-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./setup/sql/db-init.sql:/tmp/init.sql
+      - ./setup/sql/active-cdc.sql:/tmp/active-cdc.sql

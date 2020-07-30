@@ -3,13 +3,19 @@
 kafkaURL=localhost:29092
 kafkaConnectorURL=http://localhost:8083/connectors
 
-#Debezium topics
-docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic db.public.customer
-docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic db.public.sale
+##Debezium topics
+docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic debezium.history
+docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic db
+docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic db.dbo.customer
+docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic db.dbo.sale
 
-#Cotext topics
+##Context topics
 docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic customer
 docker exec -d kafka kafka-topics --create --bootstrap-server ${kafkaURL} --replication-factor 1 --partitions 1 --topic sale
+
+docker exec -it db /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '!Password1' -Q "CREATE DATABASE salesCdc;"
+docker exec -it db /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '!Password1' -i /tmp/init.sql
+docker exec -it db /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '!Password1' -i /tmp/active-cdc.sql
 
 curl -v POST -H "Content-Type: application/json" -d @setup/connector/debezium-kafka-connector.json ${kafkaConnectorURL}
 

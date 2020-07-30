@@ -25,10 +25,9 @@ public class CustomerStreamApplication {
 
     private static final String APPLICATION_ID = "customer-stream";
     private static final String CLIENT_ID = "customer-consumer";
-    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
     private static final String OFFSET_CONFIG = "earliest";
 
-    private static final String DEBEZIUM_CUSTOMER_TOPIC = "db.public.customer";
+    private static final String DEBEZIUM_CUSTOMER_TOPIC = "db.dbo.customer";
     private static final String CUSTOMER_TOPIC = "customer";
 
     public static void main(final String[] args) {

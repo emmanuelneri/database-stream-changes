@@ -1,15 +1,17 @@
 {
   "name": "debezium-connector",
   "config": {
-    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "connector.class": "io.debezium.connector.sqlserver.SqlServerConnector",
     "tasks.max": "1",
     "database.hostname": "db",
-    "database.port": "5432",
-    "database.user": "postgres",
-    "database.password": "postgres",
-    "database.dbname": "cdc",
+    "database.port": "1433",
+    "database.user": "sa",
+    "database.password": "!Password1",
+    "database.dbname": "salesCdc",
     "database.server.name": "db",
-    "table.whitelist": "public.customer,public.sale",
+    "database.history.kafka.bootstrap.servers": "kafka:29092",
+    "database.history.kafka.topic": "debezium.history",
+    "table.whitelist": "dbo.customer,dbo.sale",
     "snapshot.mode": "initial"
   }
 }

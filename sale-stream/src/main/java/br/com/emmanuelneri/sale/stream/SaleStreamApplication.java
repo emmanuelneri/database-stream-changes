@@ -31,10 +31,9 @@ public class SaleStreamApplication {
 
     private static final String APPLICATION_ID = "sale-stream";
     private static final String CLIENT_ID = "sale-stream-consumer";
-    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
     private static final String OFFSET_CONFIG = "earliest";
 
-    private static final String DEBEZIUM_SALE_TOPIC = "db.public.sale";
+    private static final String DEBEZIUM_SALE_TOPIC = "db.dbo.sale";
     private static final String SALE_TOPIC = "sale";
 
     private static final String CUSTOMER_STORE = "customer-store";
